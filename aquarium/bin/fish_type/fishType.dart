@@ -1,0 +1,4 @@
+enum FishType {
+  fishA,
+  fishB
+}

@@ -53,7 +53,7 @@ class Aquarium with Util implements AquariumInterface {
     }
   }
 
-  randomFish(List<String> currentList) {
+  String randomFish(List<String> currentList) {
     return currentList[random.nextInt(currentList.length)];
   }
 

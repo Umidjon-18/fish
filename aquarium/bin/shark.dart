@@ -16,8 +16,10 @@ class Shark {
     if (aquariumInterface.getSizeFish() > 20) {
       Fish victim = aquariumInterface.getFish()[killing(aquariumInterface.getFishA(), aquariumInterface.getFishB())];
       victim.onDead("Shark killed 🦈");
+    Timer(Duration(seconds: 3), ()=> checking(aquariumInterface.getSizeFish()));
+    } else {
+    Timer(Duration(seconds: 10), ()=> checking(aquariumInterface.getSizeFish()));
     }
-    Timer(Duration(seconds: 5), ()=> checking(aquariumInterface.getSizeFish()));
   }
 
   String killing(List<String> listFishA, List<String> listFishB) {

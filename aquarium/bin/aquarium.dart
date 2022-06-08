@@ -4,7 +4,7 @@ import 'interfaces/aquariumInterface.dart';
 import 'shark.dart';
 import 'utils/util.dart';
 
-class Aquarium with Util, Shark implements AquariumInterface {
+class Aquarium with Util implements AquariumInterface {
   Map<String, Fish> listFish = {};
   List<String> listFishA = [];
   List<String> listFishB = [];
@@ -19,6 +19,8 @@ class Aquarium with Util, Shark implements AquariumInterface {
 
     listFishA.add(fishA.name);
     listFishB.add(fishB.name);
+
+    Shark(this);
   }
 
   @override
@@ -43,7 +45,6 @@ class Aquarium with Util, Shark implements AquariumInterface {
             : listFishB.add(newFishName);
         printBirth(babyType, newFishName);
         printAll(getSizeFish(), getSizeFishA());
-        checking(getSizeFish());
       } else {
         printDecline(chosenFishName);
       }
@@ -59,6 +60,9 @@ class Aquarium with Util, Shark implements AquariumInterface {
   @override
   onDead(FishType type, String name, String reason) {
     type == FishType.fishA ? listFishA.remove(name) : listFishB.remove(name);
+    if (getSizeFishA() == 0 || getSizeFishB() == 0) {
+      printExit();
+    }
     listFish.remove(name);
     printDead(name, reason);
     printAll(getSizeFish(), getSizeFishA());
@@ -83,15 +87,22 @@ class Aquarium with Util, Shark implements AquariumInterface {
   }
 
   @override
-  getSizeFishB() {
-    return listFishB.length;
+  List<String> getFishA() {
+    return listFishA;
   }
 
   @override
-  checking(int amount) {
-    if (amount > 21) {
-      Fish? victim = listFish[killing(listFishA, listFishB)];
-      victim!.onDead("Shark killed 🦈");
-    }
+  List<String> getFishB() {
+    return listFishB;
+  }
+
+  @override
+  Map<String, Fish> getFish() {
+    return listFish;
+  }
+
+  @override
+  getSizeFishB() {
+    return listFishB.length;
   }
 }

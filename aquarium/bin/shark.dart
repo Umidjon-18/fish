@@ -1,8 +1,24 @@
+import 'dart:async';
 import 'dart:math';
 
-mixin Shark {
+import 'fish.dart';
+import 'interfaces/aquariumInterface.dart';
+
+class Shark {
   Random random = Random.secure();
-  checking(int amount) {}
+  late AquariumInterface aquariumInterface;
+
+  Shark(this.aquariumInterface){
+    checking(aquariumInterface.getSizeFish());
+  }
+
+  checking(int amount) {
+    if (aquariumInterface.getSizeFish() > 20) {
+      Fish victim = aquariumInterface.getFish()[killing(aquariumInterface.getFishA(), aquariumInterface.getFishB())];
+      victim.onDead("Shark killed 🦈");
+    }
+    Timer(Duration(seconds: 5), ()=> checking(aquariumInterface.getSizeFish()));
+  }
 
   String killing(List<String> listFishA, List<String> listFishB) {
     if (listFishA.length > listFishB.length) {
@@ -11,4 +27,5 @@ mixin Shark {
       return listFishB[random.nextInt(listFishB.length)];
     }
   }
+
 }

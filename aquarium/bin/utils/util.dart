@@ -50,6 +50,11 @@ mixin Util {
     print("FishA: $fishA. FishB: ${jami - fishA}. Jami: $jami\n");
   }
 
+  printExit(){
+    print("Bir turdagi baliqlar soni tugadi!");
+    exit(0);
+  }
+
   printError(e) {
     print(e);
     exit(0);

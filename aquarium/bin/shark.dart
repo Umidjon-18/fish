@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'fish.dart';
 import 'interfaces/aquariumInterface.dart';
 
 class Shark {
@@ -12,26 +11,12 @@ class Shark {
   }
 
   checking(int amount) {
+    int timeDuration = 15;
     if (aquariumInterface.getSizeFish() > 20) {
-      Fish victim = aquariumInterface.getFish()[
-          killing(aquariumInterface.getFishA(), aquariumInterface.getFishB())];
-      victim.onDead("Shark killed 🦈");
-      Timer(Duration(seconds: 5)  ,
-          () => checking(aquariumInterface.getSizeFish()));
-    } else {
-      Timer(Duration(seconds: 15),
-          () => checking(aquariumInterface.getSizeFish()));
+      timeDuration = 5;
+      aquariumInterface.victimDead();
     }
-  }
-
-  String killing(List<String> listFishA, List<String> listFishB) {
-    if (listFishA.length > listFishB.length + 10) {
-      return listFishA[random.nextInt(listFishA.length)];
-    } else if (listFishB.length > listFishA.length + 10) {
-      return listFishB[random.nextInt(listFishB.length)];
-    } else {
-      var allName = [...listFishA, ...listFishB];
-      return allName[random.nextInt(allName.length)];
-    }
+    Timer(Duration(seconds: timeDuration), () => checking(aquariumInterface.getSizeFish()));
+     
   }
 }

@@ -2,12 +2,14 @@ import 'fish.dart';
 import 'fish_type/fishType.dart';
 import 'interfaces/aquariumInterface.dart';
 import 'shark.dart';
+import 'utils/hive_util.dart';
 import 'utils/util.dart';
 
-class Aquarium with Util implements AquariumInterface {
+class Aquarium with Util, HiveUtil implements AquariumInterface {
   Map<String, Fish> listFish = {};
   List<String> listFishA = [];
   List<String> listFishB = [];
+  List<Fish> deadFish = [];
   int countDead = 0;
 
   onStart() {
@@ -16,13 +18,13 @@ class Aquarium with Util implements AquariumInterface {
         name: "aaaaaaaaa",
         lifeTime: generateLifeTime(),
         parent: "---------",
-        type: FishType.fishA);
+        type: "FishType.fishA");
     Fish fishB = Fish(
         aquariumInterface: this,
         name: "bbbbbbbbb",
         lifeTime: generateLifeTime(),
         parent: "---------",
-        type: FishType.fishB);
+        type: "FishType.fishB");
 
     listFish[fishA.name] = fishA;
     listFish[fishB.name] = fishB;
@@ -34,13 +36,13 @@ class Aquarium with Util implements AquariumInterface {
   }
 
   @override
-  onChosenFish(FishType type, String name, int time) {
+  onChosenFish(String type, String name, int time) {
     Map attempt = {};
     attempt["time"] = time;
 
     try {
       String chosenFishName = randomFish(listFishA);
-      if (type == FishType.fishA) {
+      if (type == "FishType.fishA") {
         randomFish(listFishB);
       }
       printRequest(name, chosenFishName);
@@ -55,7 +57,7 @@ class Aquarium with Util implements AquariumInterface {
         String newFishName = generateName(name, chosenFishName);
         Fish babyFish = Fish(
             aquariumInterface: this,
-            type: babyType,
+            type: "$babyType",
             parent: name + chosenFishName,
             name: newFishName,
             lifeTime: generateLifeTime());
@@ -72,7 +74,7 @@ class Aquarium with Util implements AquariumInterface {
         printDecline(chosenFishName);
         attempt["response"] = "decline";
       }
-      listFish[name].population.add(attempt);
+      listFish[name].population?.add(attempt);
     } catch (e) {
       printError(e);
     }
@@ -83,14 +85,29 @@ class Aquarium with Util implements AquariumInterface {
   }
 
   @override
-  onDead(FishType type, String name, String reason) {
-    type == FishType.fishA ? listFishA.remove(name) : listFishB.remove(name);
+  onDead(String type, String name, String reason) async {
+    type == "FishType.fishA" ? listFishA.remove(name) : listFishB.remove(name);
     if (getSizeFishA() == 0 || getSizeFishB() == 0) {
       printExit();
     }
     listFish[name].reasonDead = reason;
+    deadFish.add(listFish[name]);
+
+    if (deadFish.length == 1000) {
+      await addAllToBox("dead", deadFish);
+      deadFish = [];
+      clear();
+    }
+
+    if (logList.length > 1000) {
+      await addAllToBox("logList", logList);
+      logList = [];
+      clear();
+    }
+
+    countDead++;
     listFish.remove(name);
-    printDead(name, reason);
+    printDead(name, reason, countDead);
     printAll(getSizeFish(), getSizeFishA());
   }
 
@@ -112,22 +129,24 @@ class Aquarium with Util implements AquariumInterface {
   }
 
   @override
-  List<String> getFishA() {
-    return listFishA;
-  }
-
-  @override
-  List<String> getFishB() {
-    return listFishB;
-  }
-
-  @override
-  Map<String, Fish> getFish() {
-    return listFish;
-  }
-
-  @override
   getSizeFishB() {
     return listFishB.length;
+  }
+
+  @override
+  victimDead() {
+    Fish victim = listFish[killing()];
+    victim.onDead("Shark killed 🦈");
+  }
+
+  String killing() {
+    if (getSizeFishA() > getSizeFishB() + 10) {
+      return listFishA[random.nextInt(getSizeFishA())];
+    } else if (getSizeFishB() > getSizeFishA() + 10) {
+      return listFishB[random.nextInt(getSizeFishB())];
+    } else {
+      var allName = [...listFishA, ...listFishB];
+      return allName[random.nextInt(allName.length)];
+    }
   }
 }

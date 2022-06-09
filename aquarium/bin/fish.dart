@@ -17,19 +17,19 @@ class Fish extends HiveObject implements FishInterface {
   String name;
 
   @HiveField(0)
-  FishType type;
+  String type;
   @HiveField(1)
   int lifeTime;
   @HiveField(2)
-  int oportunity;
-  @HiveField(3)
-  String reasonDead;
-  @HiveField(4)
-  String birthday;
-  @HiveField(5)
   String parent;
+  @HiveField(3)
+  String birthday;
+  @HiveField(4)
+  int oportunity;
+  @HiveField(5)
+  List population;
   @HiveField(6)
-  List<Map> population;
+  String reasonDead;
 
   Fish(
       {this.aquariumInterface,

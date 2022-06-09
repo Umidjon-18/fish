@@ -11,10 +11,18 @@ class Aquarium with Util implements AquariumInterface {
   int countDead = 0;
 
   onStart() {
-    Fish fishA = Fish(FishType.fishA, "aaaaaaaaa", generateLifeTime(),
-        "---------", "---------", this);
-    Fish fishB = Fish(FishType.fishB, "bbbbbbbbb", generateLifeTime(),
-        "---------", "---------", this);
+    Fish fishA = Fish(
+        aquariumInterface: this,
+        name: "aaaaaaaaa",
+        lifeTime: generateLifeTime(),
+        parent: "---------",
+        type: FishType.fishA);
+    Fish fishB = Fish(
+        aquariumInterface: this,
+        name: "bbbbbbbbb",
+        lifeTime: generateLifeTime(),
+        parent: "---------",
+        type: FishType.fishB);
 
     listFish[fishA.name] = fishA;
     listFish[fishB.name] = fishB;
@@ -31,33 +39,40 @@ class Aquarium with Util implements AquariumInterface {
     attempt["time"] = time;
 
     try {
-      String chosenFishName = (type == FishType.fishA)
-          ? randomFish(listFishB)
-          : randomFish(listFishA);
+      String chosenFishName = randomFish(listFishA);
+      if (type == FishType.fishA) {
+        randomFish(listFishB);
+      }
       printRequest(name, chosenFishName);
 
       attempt["who"] = chosenFishName;
-      Fish? chosenFish = listFish[chosenFishName];
+      Fish chosenFish = listFish[chosenFishName];
 
-      if (chosenFish!.onWill()) {
+      if (chosenFish.onWill()) {
         printAccept(chosenFishName);
         attempt["response"] = "accept";
         FishType babyType = generateType();
         String newFishName = generateName(name, chosenFishName);
-        Fish babyFish = Fish(babyType, newFishName, generateLifeTime(), name,
-            chosenFishName, this);
+        Fish babyFish = Fish(
+            aquariumInterface: this,
+            type: babyType,
+            parent: name + chosenFishName,
+            name: newFishName,
+            lifeTime: generateLifeTime());
 
         listFish[newFishName] = babyFish;
-        babyType == FishType.fishA
-            ? listFishA.add(newFishName)
-            : listFishB.add(newFishName);
+        if (babyType == FishType.fishA) {
+          listFishA.add(newFishName);
+        } else {
+          listFishB.add(newFishName);
+        }
         printBirth(babyType, newFishName);
         printAll(getSizeFish(), getSizeFishA());
       } else {
         printDecline(chosenFishName);
         attempt["response"] = "decline";
       }
-      listFish[name]!.population.add(attempt);
+      listFish[name].population.add(attempt);
     } catch (e) {
       printError(e);
     }
@@ -73,7 +88,7 @@ class Aquarium with Util implements AquariumInterface {
     if (getSizeFishA() == 0 || getSizeFishB() == 0) {
       printExit();
     }
-    listFish[name]!.reasonDead = reason;
+    listFish[name].reasonDead = reason;
     listFish.remove(name);
     printDead(name, reason);
     printAll(getSizeFish(), getSizeFishA());
@@ -82,9 +97,8 @@ class Aquarium with Util implements AquariumInterface {
   int generateLifeTime() {
     if (listFish.length < 20) {
       return random.nextInt(40) + 20;
-    } else {
-      return random.nextInt(30) + 10;
     }
+    return random.nextInt(30) + 10;
   }
 
   @override

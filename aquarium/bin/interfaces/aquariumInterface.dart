@@ -7,6 +7,7 @@ class AquariumInterface {
   getSizeFishA(){}
   getSizeFishB(){}
   getSizeFish(){}
+  //
   getFishA(){}
   getFishB(){}
   getFish(){}

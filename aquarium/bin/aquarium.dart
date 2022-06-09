@@ -11,8 +11,10 @@ class Aquarium with Util implements AquariumInterface {
   int countDead = 0;
 
   onStart() {
-    Fish fishA = Fish(FishType.fishA, "aaaaaaaaa", generateLifeTime(), this);
-    Fish fishB = Fish(FishType.fishB, "bbbbbbbbb", generateLifeTime(), this);
+    Fish fishA = Fish(FishType.fishA, "aaaaaaaaa", generateLifeTime(),
+        "---------", "---------", this);
+    Fish fishB = Fish(FishType.fishB, "bbbbbbbbb", generateLifeTime(),
+        "---------", "---------", this);
 
     listFish[fishA.name] = fishA;
     listFish[fishB.name] = fishB;
@@ -24,20 +26,26 @@ class Aquarium with Util implements AquariumInterface {
   }
 
   @override
-  onChosenFish(FishType type, String name) {
+  onChosenFish(FishType type, String name, int time) {
+    Map attempt = {};
+    attempt["time"] = time;
+
     try {
       String chosenFishName = (type == FishType.fishA)
           ? randomFish(listFishB)
           : randomFish(listFishA);
       printRequest(name, chosenFishName);
+
+      attempt["who"] = chosenFishName;
       Fish? chosenFish = listFish[chosenFishName];
 
       if (chosenFish!.onWill()) {
         printAccept(chosenFishName);
-
+        attempt["response"] = "accept";
         FishType babyType = generateType();
         String newFishName = generateName(name, chosenFishName);
-        Fish babyFish = Fish(babyType, newFishName, generateLifeTime(), this);
+        Fish babyFish = Fish(babyType, newFishName, generateLifeTime(), name,
+            chosenFishName, this);
 
         listFish[newFishName] = babyFish;
         babyType == FishType.fishA
@@ -47,7 +55,9 @@ class Aquarium with Util implements AquariumInterface {
         printAll(getSizeFish(), getSizeFishA());
       } else {
         printDecline(chosenFishName);
+        attempt["response"] = "decline";
       }
+      listFish[name]!.population.add(attempt);
     } catch (e) {
       printError(e);
     }
@@ -63,6 +73,7 @@ class Aquarium with Util implements AquariumInterface {
     if (getSizeFishA() == 0 || getSizeFishB() == 0) {
       printExit();
     }
+    listFish[name]!.reasonDead = reason;
     listFish.remove(name);
     printDead(name, reason);
     printAll(getSizeFish(), getSizeFishA());

@@ -1,0 +1,28 @@
+{
+    "baliqName": {
+        "type": "FishType.fishA",
+        "parent": "aaaaaaaaa & bbbbbbbb",
+        "birthDay": "2022-12-23 12:34 dfdf",
+        "lifeTime": 25,
+        "reasonDead": "Shark killed",
+        "oportunity": 3,
+        "population": [
+            {
+                "time": 12,
+                "who": "bbbbbbbbb",
+                "response": "accept"
+            },
+            {
+                "time": 21,
+                "who": "ccccccccc",
+                "response": "decline"
+            },
+            {
+                "time": 32,
+                "who": "vvvvvvvvv",
+                "response": "accept"
+            }
+        ]
+
+    }
+}
